@@ -8,8 +8,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { IProduct } from "@/interfaces/product";
-import { getAllProducts } from "@/services/product";
-import { useQuery } from "@tanstack/react-query";
+import { getAllProducts, removeProductById } from "@/services/product";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import {
@@ -28,14 +28,28 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import axios from "axios";
+import { useToast } from "@/components/ui/use-toast";
 const ProductManagement = () => {
   const [page, setPage] = useState(1);
   const [limit] = useState(5);
   const [sort, setSort] = useState("asc");
   const [order, setOrder] = useState("createdAt");
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
   const { data: products } = useQuery({
     queryKey: ["PRODUCTS_KEY", { page, limit, sort, order }],
     queryFn: getAllProducts,
+  });
+  const mutation = useMutation({
+    mutationFn: removeProductById,
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["PRODUCTS_KEY", { page, limit, sort, order }],
+      });
+      toast({
+        title: "Xóa sản phẩm thành công",
+      });
+    },
   });
   useEffect(() => {
     (async () => {
@@ -44,7 +58,7 @@ const ProductManagement = () => {
         setPage(1);
         return;
       }
-      if (page <= 1) {
+      if (page < 1) {
         setPage(Math.ceil(response.data.data.length / Number(limit)));
         return;
       }
@@ -102,8 +116,22 @@ const ProductManagement = () => {
                 <TableCell>{product?.countInStock}</TableCell>
                 <TableCell>{product?.discount}</TableCell>
                 <TableCell>
-                  <Button>Delete</Button>
-                  <Button className="ml-2">Edit</Button>
+                  <Button
+                    onClick={() => {
+                      const confirm = window.confirm(
+                        "Bạn có chắc chắn muốn xóa sản phẩm này không ?"
+                      );
+                      if (confirm) {
+                        mutation.mutate(product._id);
+                        setPage(1);
+                      }
+                    }}
+                  >
+                    Delete
+                  </Button>
+                  <Link to={`/admin/products/${product?._id}/edit`}>
+                    <Button className="ml-2">Edit</Button>
+                  </Link>
                 </TableCell>
               </TableRow>
             );

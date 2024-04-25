@@ -36,3 +36,11 @@ export const updateOrderStatusAdmin = async (data: any) => {
     console.log(error);
   }
 };
+export const getOrdersByUser = async (userId: any) => {
+  try {
+    const response = await instance.get(`/orders/${userId.queryKey[0]}/user`);
+    return response.data;
+  } catch (error) {
+    console.log(error);
+  }
+};

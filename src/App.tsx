@@ -23,6 +23,8 @@ import OrderPage from "./pages/order";
 import PrivateRouteWebsite from "./router/PrivateRouterWebsite";
 import OrderPageAdmin from "./pages/admin/order";
 import DetailOrderAdmin from "./pages/admin/order/detail";
+import MyOrders from "./pages/my-orders";
+import MyOrderDetail from "./pages/order-detail";
 
 function App() {
   return (
@@ -50,6 +52,22 @@ function App() {
               </PrivateRouteWebsite>
             }
           ></Route>
+          <Route
+            path="orders/user"
+            element={
+              <PrivateRouteWebsite>
+                <MyOrders />
+              </PrivateRouteWebsite>
+            }
+          ></Route>
+          <Route
+            path="orders/:id/user"
+            element={
+              <PrivateRouteWebsite>
+                <MyOrderDetail />
+              </PrivateRouteWebsite>
+            }
+          ></Route>
         </Route>
         <Route
           path="admin"
@@ -66,8 +84,8 @@ function App() {
           <Route path="categories/add" element={<CategoryAdd />} />
           <Route path="categories" element={<CategoryList />}></Route>
           <Route path="categories/:id/edit" element={<CategoryEdit />} />
-          <Route path="orders" element={<OrderPageAdmin/>}/>
-          <Route path="orders/:id" element={<DetailOrderAdmin/>}/>
+          <Route path="orders" element={<OrderPageAdmin />} />
+          <Route path="orders/:id" element={<DetailOrderAdmin />} />
         </Route>
         <Route path="signup" element={<SignupPage />}></Route>
         <Route path="signin" element={<SigninPage />} />
