@@ -1,11 +1,12 @@
 import { IProduct } from "@/interfaces/product";
-import { addItemToCart } from "@/services/cart";
+import { addItemToCart, getCartByUser } from "@/services/cart";
 import { getAllProducts } from "@/services/product";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 import { useToast } from "./ui/use-toast";
-
+import { useState } from "react";
 const New = () => {
+  const queryClient = useQueryClient();
   const {
     data: products,
     isError,
@@ -20,6 +21,11 @@ const New = () => {
   const featuredProducts = products?.filter((product: IProduct) => {
     return product.featured == true;
   });
+  const [userId, _] = useState(JSON.parse(localStorage.getItem("user")!)?._id);
+  const { data } = useQuery({
+    queryKey: ["cart", userId],
+    queryFn: getCartByUser,
+  });
   const { toast } = useToast();
   const mutation = useMutation({
     mutationFn: addItemToCart,
@@ -27,6 +33,7 @@ const New = () => {
       toast({
         title: "Sản phẩm đã được thêm vào giỏ hàng",
       });
+      queryClient.invalidateQueries({ queryKey: ["cart", userId] });
     },
     onError: () => {
       toast({ variant: "destructive", title: "Uh oh! Something went wrong." });
@@ -46,7 +53,7 @@ const New = () => {
         </div>
         <div className="section-body">
           <div className="product-list">
-            {featuredProducts?.map((product: IProduct, index: number) => {
+            {featuredProducts?.map((product: any, index: number) => {
               return (
                 <div key={index + 1} className="product-item">
                   <div className="product-image">
@@ -93,11 +100,39 @@ const New = () => {
                         const userId = JSON.parse(
                           localStorage.getItem("user")!
                         )?._id;
-                        mutation.mutate({
-                          productId: product?._id,
-                          userId,
-                          quantity: 1,
-                        });
+                        if (userId) {
+                          const product_item_cart = data?.products?.find(
+                            (item: any) => item?.productId === product?._id
+                          );
+                          if (product?.countInStock === 0) {
+                            toast({
+                              variant: "destructive",
+                              title: "Sản phẩm hết hàng !",
+                            });
+                            return;
+                          }
+                          if (
+                            product_item_cart?.quantity + 1 >
+                            product?.countInStock
+                          ) {
+                            toast({
+                              variant: "destructive",
+                              title: "Quá số lượng tồn kho !",
+                            });
+                            return;
+                          }
+                          mutation.mutate({
+                            productId: product?._id,
+                            userId,
+                            quantity: 1,
+                          });
+                        } else {
+                          toast({
+                            variant: "destructive",
+                            title:
+                              "Đăng nhập mới được thêm sản phẩm vào giỏ hàng !",
+                          });
+                        }
                       }}
                       className="btn product-action__addtocart"
                     >

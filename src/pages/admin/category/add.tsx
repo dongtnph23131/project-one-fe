@@ -66,7 +66,7 @@ const CategoryAdd = () => {
             )}
           />
           <Button>
-            {mutation.isPending ? "Loding..." : "Thêm mới danh mục sản phẩm"}
+            {mutation.isPending ? "Loading ..." : "Thêm mới danh mục sản phẩm"}
           </Button>
         </form>
       </Form>

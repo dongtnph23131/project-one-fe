@@ -1,11 +1,18 @@
 import { useToast } from "@/components/ui/use-toast";
-import { addItemToCart } from "@/services/cart";
+import { addItemToCart, getCartByUser } from "@/services/cart";
 import { getProduct } from "@/services/product";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useState } from "react";
 import { useParams } from "react-router-dom";
 
 const DetailProduct = () => {
+  const queryClient = useQueryClient();
   const { id } = useParams();
+  const [userId, _] = useState(JSON.parse(localStorage.getItem("user")!)?._id);
+  const { data } = useQuery({
+    queryKey: ["cart", userId],
+    queryFn: getCartByUser,
+  });
   const {
     data: product,
     isError,
@@ -23,6 +30,7 @@ const DetailProduct = () => {
       toast({
         title: "Sản phẩm đã được thêm vào giỏ hàng",
       });
+      queryClient.invalidateQueries({ queryKey: ["cart", userId] });
     },
     onError: () => {
       toast({ variant: "destructive", title: "Uh oh! Something went wrong." });
@@ -65,11 +73,38 @@ const DetailProduct = () => {
               <button
                 onClick={() => {
                   const userId = JSON.parse(localStorage.getItem("user")!)?._id;
-                  mutation.mutate({
-                    productId: product?._id,
-                    userId,
-                    quantity: 1,
-                  });
+                  if (userId) {
+                    const product_item_cart = data?.products?.find(
+                      (item: any) => item?.productId === product?._id
+                    );
+                    if (product?.countInStock === 0) {
+                      toast({
+                        variant: "destructive",
+                        title: "Sản phẩm hết hàng !",
+                      });
+                      return;
+                    }
+                    if (
+                      product_item_cart?.quantity + 1 >
+                      product?.countInStock
+                    ) {
+                      toast({
+                        variant: "destructive",
+                        title: "Quá số lượng tồn kho !",
+                      });
+                      return;
+                    }
+                    mutation.mutate({
+                      productId: product?._id,
+                      userId,
+                      quantity: 1,
+                    });
+                  } else {
+                    toast({
+                      variant: "destructive",
+                      title: "Đăng nhập mới được thêm sản phẩm vào giỏ hàng !",
+                    });
+                  }
                 }}
                 className="flex ml-auto text-white bg-red-500 border-0 py-2 px-6 focus:outline-none hover:bg-red-600 rounded"
               >

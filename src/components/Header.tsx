@@ -10,9 +10,15 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useState } from "react";
 import { Button } from "./ui/button";
+import { useQuery } from "@tanstack/react-query";
+import { getCartByUser } from "@/services/cart";
 const Header = () => {
   const [user, setUser] = useState(JSON.parse(localStorage.getItem("user")!));
   const navigate = useNavigate();
+  const { data } = useQuery({
+    queryKey: ["cart", user?._id],
+    queryFn: getCartByUser,
+  });
   return (
     <header className="header">
       <div className="container">
@@ -66,6 +72,7 @@ const Header = () => {
                     <circle cx="19" cy="21" r="1"></circle>
                     <path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"></path>
                   </svg>
+                  <span className="absolute top-0 right-1">{data?.products?.length}</span>
                 </button>
               </Link>
               <NavigationMenu>

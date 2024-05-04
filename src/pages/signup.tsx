@@ -147,7 +147,7 @@ const SignupPage = () => {
                 </FormItem>
               )}
             />
-            <Button>{mutation.isPending ? "Loading" : "Signup"}</Button>
+            <Button>{mutation.isPending ? "Loading ... " : "Signup"}</Button>
           </form>
         </Form>
       </div>

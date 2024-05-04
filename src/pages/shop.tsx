@@ -14,21 +14,26 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useToast } from "@/components/ui/use-toast";
-import { IProduct } from "@/interfaces/product";
-import { addItemToCart } from "@/services/cart";
+import { addItemToCart, getCartByUser } from "@/services/cart";
 import { getAllCategories } from "@/services/category";
 import { getAllProducts } from "@/services/product";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 const ShopPage = () => {
+  const queryClient = useQueryClient();
   const [page, setPage] = useState(1);
   const [limit] = useState(4);
   const [sort, setSort] = useState("asc");
   const [order, setOrder] = useState("createdAt");
   const [category, setCategory] = useState();
   const { toast } = useToast();
+  const [userId, _] = useState(JSON.parse(localStorage.getItem("user")!)?._id);
+  const { data } = useQuery({
+    queryKey: ["cart", userId],
+    queryFn: getCartByUser,
+  });
   const {
     data: products,
     isError,
@@ -43,6 +48,7 @@ const ShopPage = () => {
       toast({
         title: "Sản phẩm đã được thêm vào giỏ hàng",
       });
+      queryClient.invalidateQueries({ queryKey: ["cart", userId] });
     },
     onError: () => {
       toast({ variant: "destructive", title: "Uh oh! Something went wrong." });
@@ -54,7 +60,10 @@ const ShopPage = () => {
   });
   useEffect(() => {
     (async () => {
-      const response = await axios.get(`http://localhost:8080/api/v1/products`);
+      const queryCategory = category ? `?&_category=${category}` : "";
+      const response = await axios.get(
+        `http://localhost:8080/api/v1/products${queryCategory}`
+      );
       if (page > Math.ceil(response.data.data.length / Number(limit))) {
         setPage(1);
         return;
@@ -84,6 +93,7 @@ const ShopPage = () => {
                 const values = value.split(" ");
                 setSort(values[0]);
                 setOrder(values[1]);
+                setPage(1);
               }}
             >
               <SelectTrigger className="w-[180px]">
@@ -101,6 +111,7 @@ const ShopPage = () => {
             <Select
               onValueChange={(value: any) => {
                 setCategory(value);
+                setPage(1);
               }}
             >
               <SelectTrigger className="w-[250px]">
@@ -119,7 +130,7 @@ const ShopPage = () => {
           </div>
           <div className="section-body">
             <div className="product-list">
-              {products?.map((product: IProduct, index: number) => {
+              {products?.map((product: any, index: number) => {
                 return (
                   <div key={index + 1} className="product-item">
                     <div className="product-image">
@@ -166,11 +177,39 @@ const ShopPage = () => {
                           const userId = JSON.parse(
                             localStorage.getItem("user")!
                           )?._id;
-                          mutation.mutate({
-                            productId: product?._id,
-                            userId,
-                            quantity: 1,
-                          });
+                          if (userId) {
+                            const product_item_cart = data?.products?.find(
+                              (item: any) => item?.productId === product?._id
+                            );
+                            if (product?.countInStock === 0) {
+                              toast({
+                                variant: "destructive",
+                                title: "Sản phẩm hết hàng !",
+                              });
+                              return;
+                            }
+                            if (
+                              product_item_cart?.quantity + 1 >
+                              product?.countInStock
+                            ) {
+                              toast({
+                                variant: "destructive",
+                                title: "Quá số lượng tồn kho !",
+                              });
+                              return;
+                            }
+                            mutation.mutate({
+                              productId: product?._id,
+                              userId,
+                              quantity: 1,
+                            });
+                          } else {
+                            toast({
+                              variant: "destructive",
+                              title:
+                                "Đăng nhập mới được thêm sản phẩm vào giỏ hàng !",
+                            });
+                          }
                         }}
                         className="btn product-action__addtocart"
                       >

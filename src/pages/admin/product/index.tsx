@@ -78,6 +78,7 @@ const ProductManagement = () => {
             const values = value.split(" ");
             setSort(values[0]);
             setOrder(values[1]);
+            setPage(1)
           }}
         >
           <SelectTrigger className="w-[180px]">
