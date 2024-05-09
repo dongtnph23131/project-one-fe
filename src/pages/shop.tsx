@@ -62,7 +62,7 @@ const ShopPage = () => {
     (async () => {
       const queryCategory = category ? `?&_category=${category}` : "";
       const response = await axios.get(
-        `http://localhost:8080/api/v1/products${queryCategory}`
+        `https://project-one-be.onrender.com/api/v1/products${queryCategory}`
       );
       if (page > Math.ceil(response.data.data.length / Number(limit))) {
         setPage(1);

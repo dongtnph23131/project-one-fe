@@ -29,22 +29,30 @@ import {
 } from "@/components/ui/select";
 import axios from "axios";
 import { useToast } from "@/components/ui/use-toast";
+import { getAllCategories } from "@/services/category";
+import { Input } from "@/components/ui/input";
 const ProductManagement = () => {
+  const [category, setCategory] = useState();
   const [page, setPage] = useState(1);
   const [limit] = useState(5);
   const [sort, setSort] = useState("asc");
   const [order, setOrder] = useState("createdAt");
+  const [q, setQ] = useState("");
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const { data: categories } = useQuery({
+    queryKey: ["CATEGORIES_KEY"],
+    queryFn: getAllCategories,
+  });
   const { data: products } = useQuery({
-    queryKey: ["PRODUCTS_KEY", { page, limit, sort, order }],
+    queryKey: ["PRODUCTS_KEY", { page, limit, sort, order, category,q }],
     queryFn: getAllProducts,
   });
   const mutation = useMutation({
     mutationFn: removeProductById,
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["PRODUCTS_KEY", { page, limit, sort, order }],
+        queryKey: ["PRODUCTS_KEY", { page, limit, sort, order, category,q }],
       });
       toast({
         title: "Xóa sản phẩm thành công",
@@ -53,7 +61,10 @@ const ProductManagement = () => {
   });
   useEffect(() => {
     (async () => {
-      const response = await axios.get(`http://localhost:8080/api/v1/products`);
+      const queryCategory = category ? `?&_category=${category}` : "";
+      const response = await axios.get(
+        `https://project-one-be.onrender.com/api/v1/products${queryCategory}`
+      );
       if (page > Math.ceil(response.data.data.length / Number(limit))) {
         setPage(1);
         return;
@@ -72,16 +83,16 @@ const ProductManagement = () => {
           <Button>Thêm sản phẩm</Button>
         </Link>
       </div>
-      <div className="px-5 py-5">
+      <div className="px-5 py-5 flex gap-3">
         <Select
           onValueChange={(value: any) => {
             const values = value.split(" ");
             setSort(values[0]);
             setOrder(values[1]);
-            setPage(1)
+            setPage(1);
           }}
         >
-          <SelectTrigger className="w-[180px]">
+          <SelectTrigger className="w-[280px]">
             <SelectValue placeholder="Lọc sản phẩm" />
           </SelectTrigger>
           <SelectContent>
@@ -91,6 +102,32 @@ const ProductManagement = () => {
             <SelectItem value="priceSelling desc">Giá giảm dần</SelectItem>
           </SelectContent>
         </Select>
+        <Select
+          onValueChange={(value: any) => {
+            setCategory(value);
+            setPage(1);
+          }}
+        >
+          <SelectTrigger className="w-[450px]">
+            <SelectValue placeholder="Lọc sản phẩm theo danh mục" />
+          </SelectTrigger>
+          <SelectContent>
+            {categories?.map((category: any, index: number) => {
+              return (
+                <SelectItem key={index + 1} value={category?._id}>
+                  {category?.name}
+                </SelectItem>
+              );
+            })}
+          </SelectContent>
+        </Select>
+        <Input
+          placeholder="Tìm kiếm sản phẩm theo tên"
+          value={q}
+          onChange={(e: any) => {
+            setQ(e.target.value);
+          }}
+        />
       </div>
       <Table>
         <TableHeader>

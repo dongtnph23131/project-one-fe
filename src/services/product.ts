@@ -2,11 +2,12 @@ import instance from "@/configs/axios";
 import { IProduct } from "@/interfaces/product";
 
 export const getAllProducts = async (params: any): Promise<IProduct[]> => {
-  const { page, limit, sort, order, category } = params.queryKey[1];
+  const { page, limit, sort, order, category, q } = params.queryKey[1];
   const queryCategory = category ? `&_category=${category}` : "";
+  const querySearch = q ? `&_q=${q}` : "";
   try {
     const response = await instance.get(
-      `/products?_page=${page}&_limit=${limit}&_order=${order}&_sort=${sort}${queryCategory}`
+      `/products?_page=${page}&_limit=${limit}&_order=${order}&_sort=${sort}${queryCategory}${querySearch}`
     );
     return response.data.data;
   } catch (error) {

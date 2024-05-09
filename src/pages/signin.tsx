@@ -37,16 +37,23 @@ const SigninPage = () => {
   const mutation = useMutation({
     mutationFn: signin,
     onSuccess: (data) => {
-      form.reset();
-      toast({
-        title: "Đăng nhập tài khoản thành công",
-      });
-      localStorage.setItem("user", JSON.stringify(data.user));
-      localStorage.setItem("token", data.token);
-      navigate("/");
+      if (data?.user) {
+        form.reset();
+        toast({
+          title: "Đăng nhập tài khoản thành công",
+        });
+        localStorage.setItem("user", JSON.stringify(data.user));
+        localStorage.setItem("token", data.token);
+        navigate("/");
+      } else {
+        toast({
+          variant: "destructive",
+          title: data?.messages[0],
+        });
+      }
     },
     onError: () => {
-      toast({ variant: "destructive", title: "Uh oh! Something went wrong." });
+      toast({ variant: "destructive", title: "Đã có lỗi !" });
     },
   });
   const submitForm = (user: any) => {

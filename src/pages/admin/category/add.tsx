@@ -31,15 +31,19 @@ const CategoryAdd = () => {
   });
   const mutation = useMutation({
     mutationFn: addCategory,
-    onSuccess: () => {
-      form.reset();
-      toast({
-        title: "Thêm danh mục sản phẩm thành công",
-      });
-      navigate("/admin/categories");
+    onSuccess: (data) => {
+      if (data?.category) {
+        form.reset();
+        toast({
+          title: "Thêm danh mục sản phẩm thành công",
+        });
+        navigate("/admin/categories");
+      } else {
+        toast({ variant: "destructive", title: data?.message });
+      }
     },
     onError: () => {
-      toast({ variant: "destructive", title: "Uh oh! Something went wrong." });
+      toast({ variant: "destructive", title: "Đã có lỗi" });
     },
   });
   function submitForm(category: any) {

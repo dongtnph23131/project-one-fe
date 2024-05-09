@@ -49,15 +49,22 @@ const SignupPage = () => {
   });
   const mutation = useMutation({
     mutationFn: signup,
-    onSuccess: () => {
-      form.reset();
-      toast({
-        title: "Đăng ký tài khoản thành công",
-      });
-      navigate("/signin");
+    onSuccess: (data) => {
+      if (data?.user) {
+        form.reset();
+        toast({
+          title: "Đăng ký tài khoản thành công",
+        });
+        navigate("/signin");
+      } else {
+        toast({
+          variant: "destructive",
+          title: data?.messages[0],
+        });
+      }
     },
     onError: () => {
-      toast({ variant: "destructive", title: "Uh oh! Something went wrong." });
+      toast({ variant: "destructive", title: "Đã có lỗi !" });
     },
   });
   const submitForm = (user: any) => {

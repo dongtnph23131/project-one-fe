@@ -54,7 +54,14 @@ const CartPage = () => {
   if (isLoading) return <p>Loading...</p>;
   if (isError) return <p>Error</p>;
   if (!data?.products)
-    return <p className="flex justify-center text-3xl">{data.message}</p>;
+    return (
+      <div className="flex justify-center text-3xl">
+        {" "}
+        <Link to={"/shop"}>
+          <Button>Chưa có sản phẩm nào trong giỏ hàng</Button>
+        </Link>
+      </div>
+    );
   return (
     <>
       {userId ? (

@@ -17,19 +17,119 @@ import { getOrdersByUser } from "@/services/order";
 import { useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { Link } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
+import { Input } from "@/components/ui/input";
+let limit = 5;
 const MyOrders = () => {
   const [user] = useState(JSON.parse(localStorage.getItem("user")!));
+  const [q, setQ] = useState("");
+  const [page, setPage] = useState(1);
+  const [orders, setOrders] = useState([]);
+  const [status, setStatus] = useState("");
   const { data, isError, isLoading } = useQuery({
     queryKey: [user?._id],
     queryFn: getOrdersByUser,
   });
+  useEffect(() => {
+    if (page > Math.ceil(data?.length / Number(limit))) {
+      setPage(1);
+      return;
+    }
+    if (page < 1) {
+      setPage(Math.ceil(data?.length / Number(limit)));
+      return;
+    }
+    if (q && !status) {
+      setOrders(
+        data?.slice((page - 1) * limit, page * limit)?.filter((item: any) => {
+          return item?.orderNumber?.includes(q);
+        })
+      );
+      return;
+    }
+    if (status && !q) {
+      setOrders(
+        data
+          ?.slice((page - 1) * limit, page * limit)
+          .filter((i: any) => i?.status === status)
+      );
+      return;
+    }
+    if (status && q) {
+      setOrders(
+        data
+          ?.slice((page - 1) * limit, page * limit)
+          .filter((i: any) => i?.status === status)
+          ?.filter((item: any) => {
+            return item?.orderNumber?.includes(q);
+          })
+      );
+      return
+    }
+    setOrders(data?.slice((page - 1) * limit, page * limit));
+  }, [page, data, q, status]);
   if (isLoading) return <p>Loading ...</p>;
   if (isError) return <p>Error ...</p>;
   return (
     <div className="px-5 py-5">
       <div className="flex mx-5 my-5">
         <h1 className="text-3xl">Danh sách đơn hàng của tôi</h1>
+      </div>
+      <div className="flex items-center gap-5">
+        <Input
+          placeholder="Tìm kiếm đơn hàng theo mã đơn hàng"
+          className="w-1/2"
+          value={q}
+          onChange={(e: any) => {
+            setQ(e.target.value);
+          }}
+        />
+        <div className="flex gap-5">
+          <Button
+            onClick={() => setStatus("")}
+            variant={`${status === "" ? "default" : "secondary"}`}
+          >
+            All
+          </Button>
+          <Button
+            variant={`${status === "pending" ? "default" : "secondary"}`}
+            onClick={() => setStatus("pending")}
+          >
+            pending
+          </Button>
+          <Button
+            variant={`${status === "confirmed" ? "default" : "secondary"}`}
+            onClick={() => setStatus("confirmed")}
+          >
+            confirmed
+          </Button>
+          <Button
+            variant={`${status === "shipped" ? "default" : "secondary"}`}
+            onClick={() => setStatus("shipped")}
+          >
+            shipped
+          </Button>
+          <Button
+            variant={`${status === "delivered" ? "default" : "secondary"}`}
+            onClick={() => setStatus("delivered")}
+          >
+            delivered
+          </Button>
+          <Button
+            variant={`${status === "cancelled" ? "default" : "secondary"}`}
+            onClick={() => setStatus("cancelled")}
+          >
+            cancelled
+          </Button>
+        </div>
       </div>
       <Table>
         <TableHeader>
@@ -44,7 +144,7 @@ const MyOrders = () => {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {data?.map((order: any, index: number) => {
+          {orders?.map((order: any, index: number) => {
             return (
               <TableRow key={index + 1}>
                 <TableHead>{order?.orderNumber}</TableHead>
@@ -84,6 +184,19 @@ const MyOrders = () => {
           })}
         </TableBody>
       </Table>
+      <Pagination>
+        <PaginationContent>
+          <PaginationItem onClick={() => setPage(page - 1)}>
+            <PaginationPrevious />
+          </PaginationItem>
+          <PaginationItem>
+            <PaginationLink>{page}</PaginationLink>
+          </PaginationItem>
+          <PaginationItem onClick={() => setPage(page + 1)}>
+            <PaginationNext />
+          </PaginationItem>
+        </PaginationContent>
+      </Pagination>
     </div>
   );
 };
