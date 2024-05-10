@@ -1,6 +1,6 @@
 import axios from "axios";
-
+import db_URI from "./db";
 const instance = axios.create({
-  baseURL: "https://project-one-be.onrender.com/api/v1",
+  baseURL: `${db_URI()}`,
 });
 export default instance;

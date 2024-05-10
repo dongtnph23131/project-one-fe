@@ -1,13 +1,15 @@
+import { Link } from "react-router-dom";
+import { Logo } from "./icons";
+
 const Footer = () => {
   return (
     <footer className="footer">
       <div className="container">
         <div className="footer-list">
           <div className="footer-item">
-            <img src="./assets/logo.svg" alt="" />
-            <p className="footer__address">
-              400 University Drive Suite 200 Coral Gables, FL 33134 USA
-            </p>
+            <Link to="/" className="header__logo">
+              <img src={Logo} alt="#" />
+            </Link>
           </div>
           <div className="footer-nav">
             <div className="footer-item">
@@ -57,7 +59,6 @@ const Footer = () => {
             </form>
           </div>
         </div>
-        <p className="copyright">2023 furino. All rights reverved</p>
       </div>
     </footer>
   );

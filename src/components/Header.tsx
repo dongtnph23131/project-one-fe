@@ -22,6 +22,7 @@ import { useQuery } from "@tanstack/react-query";
 import { getCartByUser } from "@/services/cart";
 import { Input } from "./ui/input";
 import axios from "axios";
+import db_URI from "@/configs/db";
 const Header = () => {
   const [isSearch, setIsSearch] = useState(false);
   const [dataSearch, setDataSearch] = useState([]);
@@ -107,7 +108,7 @@ const Header = () => {
                           const querySearch =
                             e.target.value !== "" ? `_q=${e.target.value}` : "";
                           const response = await axios.get(
-                            `https://project-one-be.onrender.com/api/v1/products?${querySearch}`
+                            `${db_URI()}/products?${querySearch}`
                           );
                           setDataSearch(response?.data?.data);
                         } catch (error) {

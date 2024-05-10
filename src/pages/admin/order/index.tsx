@@ -27,6 +27,7 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
+import { Skeleton } from "@/components/ui/skeleton";
 let limit = 5;
 const OrderPageAdmin = () => {
   const [q, setQ] = useState("");
@@ -75,7 +76,16 @@ const OrderPageAdmin = () => {
     }
     setOrders(data?.slice((page - 1) * limit, page * limit));
   }, [page, data, q, status]);
-  if (isLoading) return <p>Loading ...</p>;
+  if (isLoading)
+    return (
+      <div className="px-5 py-5">
+        <Skeleton className="w-full h-[20px] rounded-full mt-5" />
+        <Skeleton className="w-full h-[20px] rounded-full  mt-5" />
+        <Skeleton className="w-full h-[20px] rounded-full mt-5" />
+        <Skeleton className="w-full h-[20px] rounded-full mt-5" />
+        <Skeleton className="w-full h-[20px] rounded-full mt-5" />
+      </div>
+    );
   if (isError) return <p>Error ...</p>;
   return (
     <div className="px-5 py-5">

@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Table,
   TableBody,
@@ -51,7 +52,16 @@ const CartPage = () => {
     },
     0
   );
-  if (isLoading) return <p>Loading...</p>;
+  if (isLoading)
+    return (
+      <div className="px-5 py-5">
+        <Skeleton className="w-full h-[20px] rounded-full mt-5" />
+        <Skeleton className="w-full h-[20px] rounded-full  mt-5" />
+        <Skeleton className="w-full h-[20px] rounded-full mt-5" />
+        <Skeleton className="w-full h-[20px] rounded-full mt-5" />
+        <Skeleton className="w-full h-[20px] rounded-full mt-5" />
+      </div>
+    );
   if (isError) return <p>Error</p>;
   if (!data?.products)
     return (

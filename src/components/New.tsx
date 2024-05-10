@@ -5,6 +5,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 import { useToast } from "./ui/use-toast";
 import { useState } from "react";
+import { Skeleton } from "./ui/skeleton";
 const New = () => {
   const queryClient = useQueryClient();
   const {
@@ -36,14 +37,22 @@ const New = () => {
       queryClient.invalidateQueries({ queryKey: ["cart", userId] });
     },
     onError: () => {
-      toast({ variant: "destructive", title: "Uh oh! Something went wrong." });
+      toast({ variant: "destructive", title: "Có lỗi xảy ra !" });
     },
   });
   if (isError) {
     return <p>Error ...</p>;
   }
   if (isLoading) {
-    return <p>Loading ...</p>;
+    return (
+      <div className="px-5 py-5">
+        <Skeleton className="w-full h-[20px] rounded-full mt-5" />
+        <Skeleton className="w-full h-[20px] rounded-full  mt-5" />
+        <Skeleton className="w-full h-[20px] rounded-full mt-5" />
+        <Skeleton className="w-full h-[20px] rounded-full mt-5" />
+        <Skeleton className="w-full h-[20px] rounded-full mt-5" />
+      </div>
+    );
   }
   return (
     <section className="news">

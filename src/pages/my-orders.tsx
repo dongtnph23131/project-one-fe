@@ -27,6 +27,7 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 import { Input } from "@/components/ui/input";
+import { Skeleton } from "@/components/ui/skeleton";
 let limit = 5;
 const MyOrders = () => {
   const [user] = useState(JSON.parse(localStorage.getItem("user")!));
@@ -72,11 +73,20 @@ const MyOrders = () => {
             return item?.orderNumber?.includes(q);
           })
       );
-      return
+      return;
     }
     setOrders(data?.slice((page - 1) * limit, page * limit));
   }, [page, data, q, status]);
-  if (isLoading) return <p>Loading ...</p>;
+  if (isLoading)
+    return (
+      <div className="px-5 py-5">
+        <Skeleton className="w-full h-[20px] rounded-full mt-5" />
+        <Skeleton className="w-full h-[20px] rounded-full  mt-5" />
+        <Skeleton className="w-full h-[20px] rounded-full mt-5" />
+        <Skeleton className="w-full h-[20px] rounded-full mt-5" />
+        <Skeleton className="w-full h-[20px] rounded-full mt-5" />
+      </div>
+    );
   if (isError) return <p>Error ...</p>;
   return (
     <div className="px-5 py-5">

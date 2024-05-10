@@ -1,5 +1,6 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 import { getAllOrders } from "@/services/order";
 import { getAllProducts } from "@/services/product";
 import { useQuery } from "@tanstack/react-query";
@@ -31,7 +32,15 @@ const DashboardPage = () => {
     return <p>Error ...</p>;
   }
   if (isLoading) {
-    return <p>Loading ...</p>;
+    return (
+      <div className="px-5 py-5">
+        <Skeleton className="w-full h-[20px] rounded-full mt-5" />
+        <Skeleton className="w-full h-[20px] rounded-full  mt-5" />
+        <Skeleton className="w-full h-[20px] rounded-full mt-5" />
+        <Skeleton className="w-full h-[20px] rounded-full mt-5" />
+        <Skeleton className="w-full h-[20px] rounded-full mt-5" />
+      </div>
+    );
   }
   return (
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 mb-4 px-5 py-5">

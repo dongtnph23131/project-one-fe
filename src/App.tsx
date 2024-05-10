@@ -1,4 +1,9 @@
-import { Route, Routes } from "react-router-dom";
+import {
+  Route,
+  RouterProvider,
+  Routes,
+  createBrowserRouter,
+} from "react-router-dom";
 import HomePage from "./pages/home";
 import LayoutWebsite from "./components/layout/LayoutWebsite";
 import NotFound from "./pages/notfound";
@@ -25,72 +30,79 @@ import OrderPageAdmin from "./pages/admin/order";
 import DetailOrderAdmin from "./pages/admin/order/detail";
 import MyOrders from "./pages/my-orders";
 import MyOrderDetail from "./pages/order-detail";
+const user = JSON.parse(localStorage.getItem("user")!);
+const router = createBrowserRouter([
+  {
+    path: "",
+    element: <LayoutWebsite />,
+    children: [
+      { index: true, element: <HomePage /> },
+      { path: "shop", element: <ShopPage /> },
+      { path: "about", element: <AboutPage /> },
+      { path: "contact", element: <ContactPage /> },
+      { path: "products/:id", element: <DetailProduct /> },
+      {
+        path: "cart",
+        element: <PrivateRouteWebsite user={user} />,
+        children: [{ index: true, element: <CartPage /> }],
+      },
+      {
+        path: "order",
+        element: <PrivateRouteWebsite user={user} />,
+        children: [{ index: true, element: <OrderPage /> }],
+      },
+      {
+        path: "orders/user",
+        element: <PrivateRouteWebsite user={user} />,
+        children: [{ index: true, element: <MyOrders /> }],
+      },
+      {
+        path: "orders/:id/user",
+        element: <PrivateRouteWebsite user={user} />,
+        children: [{ index: true, element: <MyOrderDetail /> }],
+      },
+    ],
+  },
+  {
+    path: "admin",
+    element: (
+      <PrivateRoute user={user}>
+        <LayoutAdmin />
+      </PrivateRoute>
+    ),
+    children: [
+      { index: true, element: <DashboardPage /> },
+      {
+        path: "products",
+        element: <ProductManagement />,
+      },
+      {
+        path: "products/add",
+        element: <ProductAdd />,
+      },
+      {
+        path: "products/:id/edit",
+        element: <ProductEdit />,
+      },
+      {
+        path: "categories",
+        element: <CategoryList />,
+      },
+      { path: "categories/add", element: <CategoryAdd /> },
+      { path: "categories/:id/edit", element: <CategoryEdit /> },
+      { path: "orders", element: <OrderPageAdmin /> },
+      { path: "orders/:id", element: <DetailOrderAdmin /> },
+    ],
+  },
+  { path: "signin", element: <SigninPage /> },
+  { path: "signup", element: <SignupPage /> },
+  { path: "*", element: <NotFound /> },
+]);
 
 function App() {
   return (
     <>
-      <Routes>
-        <Route path="/" element={<LayoutWebsite />}>
-          <Route index element={<HomePage />} />
-          <Route path="shop" element={<ShopPage />} />
-          <Route path="about" element={<AboutPage />} />
-          <Route path="contact" element={<ContactPage />} />
-          <Route path="products/:id" element={<DetailProduct />} />
-          <Route
-            path="cart"
-            element={
-              <PrivateRouteWebsite>
-                <CartPage />
-              </PrivateRouteWebsite>
-            }
-          ></Route>
-          <Route
-            path="order"
-            element={
-              <PrivateRouteWebsite>
-                <OrderPage />
-              </PrivateRouteWebsite>
-            }
-          ></Route>
-          <Route
-            path="orders/user"
-            element={
-              <PrivateRouteWebsite>
-                <MyOrders />
-              </PrivateRouteWebsite>
-            }
-          ></Route>
-          <Route
-            path="orders/:id/user"
-            element={
-              <PrivateRouteWebsite>
-                <MyOrderDetail />
-              </PrivateRouteWebsite>
-            }
-          ></Route>
-        </Route>
-        <Route
-          path="admin"
-          element={
-            <PrivateRoute>
-              <LayoutAdmin />
-            </PrivateRoute>
-          }
-        >
-          <Route index element={<DashboardPage />} />
-          <Route path="products" element={<ProductManagement />} />
-          <Route path="products/add" element={<ProductAdd />} />
-          <Route path="products/:id/edit" element={<ProductEdit />} />
-          <Route path="categories/add" element={<CategoryAdd />} />
-          <Route path="categories" element={<CategoryList />}></Route>
-          <Route path="categories/:id/edit" element={<CategoryEdit />} />
-          <Route path="orders" element={<OrderPageAdmin />} />
-          <Route path="orders/:id" element={<DetailOrderAdmin />} />
-        </Route>
-        <Route path="signup" element={<SignupPage />}></Route>
-        <Route path="signin" element={<SigninPage />} />
-        <Route path="*" element={<NotFound />} />
-      </Routes>
+      <RouterProvider router={router} />
       <Toaster />
     </>
   );

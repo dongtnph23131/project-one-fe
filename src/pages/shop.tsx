@@ -13,7 +13,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/components/ui/use-toast";
+import db_URI from "@/configs/db";
 import { addItemToCart, getCartByUser } from "@/services/cart";
 import { getAllCategories } from "@/services/category";
 import { getAllProducts } from "@/services/product";
@@ -61,9 +63,7 @@ const ShopPage = () => {
   useEffect(() => {
     (async () => {
       const queryCategory = category ? `?&_category=${category}` : "";
-      const response = await axios.get(
-        `https://project-one-be.onrender.com/api/v1/products${queryCategory}`
-      );
+      const response = await axios.get(`${db_URI()}/products${queryCategory}`);
       if (page > Math.ceil(response.data.data.length / Number(limit))) {
         setPage(1);
         return;
@@ -78,7 +78,13 @@ const ShopPage = () => {
     return <p>Error ...</p>;
   }
   if (isLoading) {
-    return <p>Loading ...</p>;
+    <div className="px-5 py-5">
+      <Skeleton className="w-full h-[20px] rounded-full mt-5" />
+      <Skeleton className="w-full h-[20px] rounded-full  mt-5" />
+      <Skeleton className="w-full h-[20px] rounded-full mt-5" />
+      <Skeleton className="w-full h-[20px] rounded-full mt-5" />
+      <Skeleton className="w-full h-[20px] rounded-full mt-5" />
+    </div>;
   }
   return (
     <>

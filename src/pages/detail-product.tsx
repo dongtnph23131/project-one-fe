@@ -1,3 +1,4 @@
+import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/components/ui/use-toast";
 import { addItemToCart, getCartByUser } from "@/services/cart";
 import { getProduct } from "@/services/product";
@@ -40,7 +41,15 @@ const DetailProduct = () => {
     return <p>Error ...</p>;
   }
   if (isLoading) {
-    return <p>Loading ...</p>;
+    return (
+      <div className="px-5 py-5">
+        <Skeleton className="w-full h-[20px] rounded-full mt-5" />
+        <Skeleton className="w-full h-[20px] rounded-full  mt-5" />
+        <Skeleton className="w-full h-[20px] rounded-full mt-5" />
+        <Skeleton className="w-full h-[20px] rounded-full mt-5" />
+        <Skeleton className="w-full h-[20px] rounded-full mt-5" />
+      </div>
+    );
   }
   return (
     <section className="text-gray-700 body-font overflow-hidden bg-white">

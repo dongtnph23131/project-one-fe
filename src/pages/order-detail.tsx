@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Table,
   TableBody,
@@ -26,7 +27,15 @@ const MyOrderDetail = () => {
       queryClient.invalidateQueries({ queryKey: [orderId] });
     },
   });
-  if (isLoading) return <p>Loading ...</p>;
+  if (isLoading) return (
+    <div className="px-5 py-5">
+      <Skeleton className="w-full h-[20px] rounded-full mt-5" />
+      <Skeleton className="w-full h-[20px] rounded-full  mt-5" />
+      <Skeleton className="w-full h-[20px] rounded-full mt-5" />
+      <Skeleton className="w-full h-[20px] rounded-full mt-5" />
+      <Skeleton className="w-full h-[20px] rounded-full mt-5" />
+    </div>
+  );
   if (isError) return <p>Error ...</p>;
   return (
     <>
