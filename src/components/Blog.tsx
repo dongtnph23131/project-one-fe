@@ -3,7 +3,7 @@ const Blog = () => {
     <section className="blog">
       <div className="container">
         <div className="section-heading section-blog-heading">
-          <h2 className="section-heading__title">Blog</h2>
+          <h2 className="section-heading__title">Bài viết</h2>
         </div>
         <div className="section-body">
           <div className="post-list">

@@ -8,6 +8,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Table,
   TableBody,
@@ -32,7 +33,7 @@ const formSchema = z.object({
   address: z.string(),
   phone: z.string(),
   email: z.string().email({
-    message: "Sai địng dạng email",
+    message: "Sai định dạng email",
   }),
 });
 const OrderPage = () => {
@@ -60,7 +61,10 @@ const OrderPage = () => {
       navigate("/");
     },
     onError: () => {
-      toast({ variant: "destructive", title: "Uh oh! Something went wrong." });
+      toast({
+        variant: "destructive",
+        title: "Error! An error occurred. Please try again later !",
+      });
     },
   });
   const form = useForm({
@@ -93,7 +97,16 @@ const OrderPage = () => {
     };
     mutation.mutate(dataReq);
   };
-  if (isLoading) return <p>Loading...</p>;
+  if (isLoading)
+    return (
+      <div className="px-5 py-5">
+        <Skeleton className="w-full h-[20px] rounded-full mt-5" />
+        <Skeleton className="w-full h-[20px] rounded-full  mt-5" />
+        <Skeleton className="w-full h-[20px] rounded-full mt-5" />
+        <Skeleton className="w-full h-[20px] rounded-full mt-5" />
+        <Skeleton className="w-full h-[20px] rounded-full mt-5" />
+      </div>
+    );
   if (isError) return <p>Error</p>;
   return (
     <>

@@ -15,7 +15,8 @@ import { z } from "zod";
 import { useToast } from "@/components/ui/use-toast";
 import { useMutation } from "@tanstack/react-query";
 import { signin } from "@/services/auth";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { AiOutlineLoading3Quarters } from "react-icons/ai";
 const formSchema = z.object({
   email: z.string().email({
     message: "Sai địng dạng email",
@@ -53,7 +54,10 @@ const SigninPage = () => {
       }
     },
     onError: () => {
-      toast({ variant: "destructive", title: "Đã có lỗi !" });
+      toast({
+        variant: "destructive",
+        title: "Error! An error occurred. Please try again later !",
+      });
     },
   });
   const submitForm = (user: any) => {
@@ -64,7 +68,7 @@ const SigninPage = () => {
       <div className="sm:mx-auto sm:w-full sm:max-w-sm">
         <img className="mx-auto h-10 w-auto" src={Logo} alt="Your Company" />
         <h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
-          Sign in to your account
+          Đăng nhập tài khoản
         </h2>
       </div>
       <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
@@ -100,7 +104,16 @@ const SigninPage = () => {
                 </FormItem>
               )}
             />
-            <Button>{mutation.isPending ? "Loading ... " : "Signin"}</Button>
+            <Button>
+              {mutation.isPending ? (
+                <AiOutlineLoading3Quarters className="animate-spin" />
+              ) : (
+                "Đăng nhập tài khoản"
+              )}
+            </Button>
+            <Link className="mx-5" to={"/signup"}>
+              <Button>Đăng ký</Button>
+            </Link>
           </form>
         </Form>
       </div>

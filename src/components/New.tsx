@@ -37,7 +37,10 @@ const New = () => {
       queryClient.invalidateQueries({ queryKey: ["cart", userId] });
     },
     onError: () => {
-      toast({ variant: "destructive", title: "Có lỗi xảy ra !" });
+      toast({
+        variant: "destructive",
+        title: "Error! An error occurred. Please try again later !",
+      });
     },
   });
   if (isError) {
@@ -58,7 +61,7 @@ const New = () => {
     <section className="news">
       <div className="container">
         <div className="section-heading">
-          <h2 className="section-heading__title">Featured</h2>
+          <h2 className="section-heading__title">Sản phẩm nổi bật</h2>
         </div>
         <div className="section-body">
           <div className="product-list">

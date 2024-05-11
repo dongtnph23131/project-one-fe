@@ -10,7 +10,7 @@ import {
 import { IProduct } from "@/interfaces/product";
 import { getAllProducts, removeProductById } from "@/services/product";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import {
   Pagination,
@@ -45,36 +45,20 @@ const ProductManagement = () => {
     queryFn: getAllCategories,
   });
   const { data: products } = useQuery({
-    queryKey: ["PRODUCTS_KEY", { page, limit, sort, order, category,q }],
+    queryKey: ["PRODUCTS_KEY", { page, limit, sort, order, category, q }],
     queryFn: getAllProducts,
   });
   const mutation = useMutation({
     mutationFn: removeProductById,
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["PRODUCTS_KEY", { page, limit, sort, order, category,q }],
+        queryKey: ["PRODUCTS_KEY", { page, limit, sort, order, category, q }],
       });
       toast({
         title: "Xóa sản phẩm thành công",
       });
     },
   });
-  useEffect(() => {
-    (async () => {
-      const queryCategory = category ? `?&_category=${category}` : "";
-      const response = await axios.get(
-        `https://project-one-be.onrender.com/api/v1/products${queryCategory}`
-      );
-      if (page > Math.ceil(response.data.data.length / Number(limit))) {
-        setPage(1);
-        return;
-      }
-      if (page < 1) {
-        setPage(Math.ceil(response.data.data.length / Number(limit)));
-        return;
-      }
-    })();
-  }, [page]);
   return (
     <div className="px-5 py-5">
       <div className="flex justify-between">
@@ -178,13 +162,51 @@ const ProductManagement = () => {
       </Table>
       <Pagination>
         <PaginationContent>
-          <PaginationItem onClick={() => setPage(page - 1)}>
+          <PaginationItem
+            onClick={async () => {
+              let query = "";
+              if (q || category) {
+                query = "?";
+              }
+              query = category ? `${query}&_category=${category}` : query;
+              query = q ? `${query}&_q=${q}` : query;
+              const response = await axios.get(
+                `https://project-one-be.onrender.com/api/v1/products${query}`
+              );
+              if (page <= 1) {
+                setPage(Math.ceil(response.data.data.length / Number(limit)));
+                return;
+              } else {
+                setPage(page - 1);
+              }
+            }}
+          >
             <PaginationPrevious />
           </PaginationItem>
           <PaginationItem>
             <PaginationLink>{page}</PaginationLink>
           </PaginationItem>
-          <PaginationItem onClick={() => setPage(page + 1)}>
+          <PaginationItem
+            onClick={async () => {
+              let query = "";
+              if (q || category) {
+                query = "?";
+              }
+              query = category ? `${query}&_category=${category}` : query;
+              query = q ? `${query}&_q=${q}` : query;
+              const response = await axios.get(
+                `https://project-one-be.onrender.com/api/v1/products${query}`
+              );
+              if (
+                page >= Math.ceil(response.data.data.length / Number(limit))
+              ) {
+                setPage(1);
+                return;
+              } else {
+                setPage(page + 1);
+              }
+            }}
+          >
             <PaginationNext />
           </PaginationItem>
         </PaginationContent>

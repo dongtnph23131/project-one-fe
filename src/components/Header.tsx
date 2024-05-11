@@ -69,7 +69,10 @@ const Header = () => {
           <Dialog>
             <DialogTrigger>
               <div
-                onClick={() => setIsSearch(true)}
+                onClick={() => {
+                  setIsSearch(true);
+                  setDataSearch([]);
+                }}
                 className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground relative size-9 p-0 xl:h-10 xl:w-60 xl:justify-start xl:px-3 xl:py-2"
               >
                 <svg
@@ -102,7 +105,7 @@ const Header = () => {
                       onChange={async (e: any) => {
                         try {
                           if (e.target.value === "") {
-                            setDataSearch([])
+                            setDataSearch([]);
                             return;
                           }
                           const querySearch =
@@ -116,7 +119,7 @@ const Header = () => {
                         }
                       }}
                     />
-                    {dataSearch?.length  > 0 ? (
+                    {dataSearch?.length > 0 ? (
                       <>
                         {dataSearch?.map((item: any, index: any) => {
                           return (
@@ -202,7 +205,7 @@ const Header = () => {
                             data-orientation="vertical"
                             data-radix-collection-item=""
                           >
-                            My order
+                            Đơn hàng của tôi
                           </button>
                         </Link>
                         {user?.role === "admin" ? (
@@ -213,7 +216,7 @@ const Header = () => {
                               data-orientation="vertical"
                               data-radix-collection-item=""
                             >
-                              Admin
+                              Quản trị
                             </button>
                           </Link>
                         ) : (
@@ -231,7 +234,7 @@ const Header = () => {
                             navigate("/");
                           }}
                         >
-                          Logout
+                          Đăng xuất
                         </button>
                       </ul>
                     </NavigationMenuContent>
@@ -245,10 +248,10 @@ const Header = () => {
           {!user ? (
             <div className="flex gap-3 justify-center">
               <Link to={"/signin"}>
-                <Button>Signin</Button>
+                <Button>Đăng nhập</Button>
               </Link>
               <Link to={"/signup"}>
-                <Button>Signup</Button>
+                <Button>Đăng ký</Button>
               </Link>
             </div>
           ) : (

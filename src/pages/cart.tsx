@@ -120,14 +120,14 @@ const CartPage = () => {
                               if (item?.quantity === 0) {
                                 toast({
                                   variant: "destructive",
-                                  title: "Sản phẩm hết hàng !",
+                                  title: "Sản phẩm hết hàng",
                                 });
                                 return;
                               }
                               if (item?.quantity + 1 > item?.countInStock) {
                                 toast({
                                   variant: "destructive",
-                                  title: "Quá số lượng tồn kho !",
+                                  title: "Quá số lượng tồn kho",
                                 });
                                 return;
                               }

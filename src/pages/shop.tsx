@@ -21,7 +21,7 @@ import { getAllCategories } from "@/services/category";
 import { getAllProducts } from "@/services/product";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
 const ShopPage = () => {
   const queryClient = useQueryClient();
@@ -53,27 +53,16 @@ const ShopPage = () => {
       queryClient.invalidateQueries({ queryKey: ["cart", userId] });
     },
     onError: () => {
-      toast({ variant: "destructive", title: "Uh oh! Something went wrong." });
+      toast({
+        variant: "destructive",
+        title: "Error! An error occurred. Please try again later !",
+      });
     },
   });
   const { data: categories } = useQuery({
     queryKey: ["CATEGORIES_KEY"],
     queryFn: getAllCategories,
   });
-  useEffect(() => {
-    (async () => {
-      const queryCategory = category ? `?&_category=${category}` : "";
-      const response = await axios.get(`${db_URI()}/products${queryCategory}`);
-      if (page > Math.ceil(response.data.data.length / Number(limit))) {
-        setPage(1);
-        return;
-      }
-      if (page < 1) {
-        setPage(Math.ceil(response.data.data.length / Number(limit)));
-        return;
-      }
-    })();
-  }, [page]);
   if (isError) {
     return <p>Error ...</p>;
   }
@@ -91,7 +80,7 @@ const ShopPage = () => {
       <section className="news">
         <div className="container">
           <div className="section-heading">
-            <h2 className="section-heading__title">All Products</h2>
+            <h2 className="section-heading__title">Tất cả sản phẩm</h2>
           </div>
           <div className="px-5 py-5 flex">
             <Select
@@ -231,13 +220,41 @@ const ShopPage = () => {
       </section>
       <Pagination>
         <PaginationContent>
-          <PaginationItem onClick={() => setPage(page - 1)}>
+          <PaginationItem
+            onClick={async () => {
+              const queryCategory = category ? `?&_category=${category}` : "";
+              const response = await axios.get(
+                `${db_URI()}/products${queryCategory}`
+              );
+              if (page <= 1) {
+                setPage(Math.ceil(response.data.data.length / Number(limit)));
+                return;
+              } else {
+                setPage(page - 1);
+              }
+            }}
+          >
             <PaginationPrevious />
           </PaginationItem>
           <PaginationItem>
             <PaginationLink>{page}</PaginationLink>
           </PaginationItem>
-          <PaginationItem onClick={() => setPage(page + 1)}>
+          <PaginationItem
+            onClick={async () => {
+              const queryCategory = category ? `?&_category=${category}` : "";
+              const response = await axios.get(
+                `${db_URI()}/products${queryCategory}`
+              );
+              if (
+                page >= Math.ceil(response.data.data.length / Number(limit))
+              ) {
+                setPage(1);
+                return;
+              } else {
+                setPage(page + 1);
+              }
+            }}
+          >
             <PaginationNext />
           </PaginationItem>
         </PaginationContent>
